@@ -41,12 +41,30 @@ if (move_uploaded_file($_FILES['image-file']['tmp_name'], $target_file)) {
 
     // Save image info to DB
     $now = gmdate('Y-m-d H:i:s');
-    $sm = $conn->prepare("INSERT INTO `images` (`md5`, `file_location`, `upload_date`) VALUES (?, ?, ?)");
-    $sm->bind_param("sss", $file_md5, $target_file, $now);
-    $sm->execute();
+    $misc = 'misc';
+    if (isset($_POST['image-tag'])) {
+        if ($_POST['image-tag']) {
+            $tag = $_POST['image-tag'];
+            $sm = $conn->prepare("INSERT INTO `images` (`md5`, `file_location`, `upload_date`, `tag`) VALUES (?, ?, ?, ?)");
+            $sm->bind_param("ssss", $file_md5, $target_file, $now, $tag);
+            $sm->execute();
+
+        } else {
+
+            $sm = $conn->prepare("INSERT INTO `images` (`md5`, `file_location`, `upload_date`, `tag`) VALUES (?, ?, ?, ?)");
+            $sm->bind_param("ssss", $file_md5, $target_file, $now, $misc);
+            $sm->execute();
+        }
+    } else {
+        $sm = $conn->prepare("INSERT INTO `images` (`md5`, `file_location`, `upload_date`, `tag`) VALUES (?, ?, ?, ?)");
+        $sm->bind_param("ssss", $file_md5, $target_file, $now, $misc);
+        $sm->execute();
+    }
+
     $conn->close();
 
-    echo '<a target="_blank" href="' . $target_file .'">Go To Image</a>';
+    echo '<a target="_blank" href="' . $target_file .'">Go To Image</a><br>';
+    echo '<a href="index.php">Go back to upload</a>';
 
 } else {
     $conn->close();
