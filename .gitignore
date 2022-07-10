@@ -1,5 +1,2 @@
-*
-
-!upload.php
-!.gitignore
-!README.md
+.vscode/
+images/*

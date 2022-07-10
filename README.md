@@ -1,6 +1,6 @@
 # funkywunks.moe
 
-Just for me to share images, videos, etc. But, here's the source code for the upload.php.
+Just for me to share images, videos, etc. Here's the source though.
 
 In `nginx.conf` I set `client_max_body_size` to 100M, same for `upload_max_filesize` in php.ini (If using php-fpm, it'll be the php.ini for that). This is to allow for maximum 100MB file size upload.
 
@@ -18,10 +18,6 @@ Couple of reasons:
 * there are 16^4 (over 65000) unique locations for images to rest in.
     * this is to prevent too many images being in 1 directory (unlikely anyway since only I upload to the server)
 
-## Why just upload.php
-* It is the only meaningful file to add. The only public accessible locations are images, videos, etc that are uploaded (and a gallery in the near future). 
-* While both upload.php and index.php are only accessible by me, index.php only has a form for me to upload the images manually.
-* I do plan on adding ShareX integration and a gallery.php, those will be added here.
 
 
 ## Why http basic auth
