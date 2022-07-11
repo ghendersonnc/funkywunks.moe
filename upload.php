@@ -4,6 +4,13 @@ require('../connect.php');
 require('../config.php');
 require('../vendor/autoload.php');
 
+if (isset($_POST['private-key'])) {
+    if ($_POST['private-key'] != $config['fw_private_key']) {
+        die("not for u");
+    }
+} else {
+    die("nice try");
+}
 
 $ffmpeg = \FFMpeg\FFMpeg::create([
     'ffmpeg.binaries'  => $config['ffmpeg_bin'],

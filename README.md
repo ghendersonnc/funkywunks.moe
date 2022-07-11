@@ -18,5 +18,5 @@ Couple of reasons:
 * there are 16^4 (over 65000) unique locations for images to rest in.
     * this is to prevent too many images being in 1 directory (unlikely anyway since only I upload to the server)
 
-## Why http basic auth
-There's absolutely no user data for me add to a database, so it is unnecessary to create a login system. It is not any more/less secure.
+## Why private key to upload
+Can't be bothered to add login system at this time.

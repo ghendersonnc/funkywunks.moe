@@ -17,6 +17,7 @@
     <a href="gallery.php">To Gallery</a>
     <form action="upload.php" method="post" enctype="multipart/form-data">
         <input type="file" name="image-file" id="image-file"><br>
+        <input type="text" name="private-key" placeholder="private key for funkywunks"><br>
         <input type="submit" value="Upload" name="submit">
     </form>
 </body>
