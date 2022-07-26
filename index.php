@@ -37,7 +37,7 @@
                            required>
                 </label>
                 <label for="submit">
-                    <input type="submit" value="Upload" name="submit" id="submit-form">
+                    <input type="submit" value="Upload" name="submit" id="submit-form" onclick="rememberToken()">
                 </label>
             </form>
         </div>
@@ -47,5 +47,6 @@
     </div>
 
     <script src="./js/fileNameStuff.js"></script>
+    <script src="./js/rememberToken.js"></script>
 </body>
 </html>
