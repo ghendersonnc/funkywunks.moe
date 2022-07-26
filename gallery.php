@@ -7,6 +7,7 @@ require('../connect.php');
  */
 
 $query = $conn->query('SELECT COUNT(*) FROM `images`');
+$imagesPerPage = 18;
 $offset = 0;
 $totalImages = 0;
 $imageUrls = [];
@@ -18,7 +19,7 @@ if ($query->num_rows > 0) {
     if ($totalImages > 0) {
         if (isset($_GET['offset'])) {
             $offset = preg_replace('/\D/', '', $_GET['offset']);
-            $query = $conn->query("SELECT `file_location`, `md5` FROM `images` ORDER BY `upload_date` DESC LIMIT $offset, 10");
+            $query = $conn->query("SELECT `file_location`, `md5` FROM `images` ORDER BY `upload_date` DESC LIMIT $offset, $imagesPerPage");
 
             if ($query->num_rows > 0) {
                 while ($row = $query->fetch_assoc()) {
@@ -28,7 +29,7 @@ if ($query->num_rows > 0) {
             }
 
         } else {
-            $query = $conn->query("SELECT `file_location`, `md5` FROM `images` ORDER BY `upload_date` DESC LIMIT $offset, 10");
+            $query = $conn->query("SELECT `file_location`, `md5` FROM `images` ORDER BY `upload_date` DESC LIMIT $offset, $imagesPerPage");
 
             if ($query->num_rows > 0) {
                 while ($row = $query->fetch_assoc()) {
@@ -60,7 +61,7 @@ if ($query->num_rows > 0) {
     <div class="gallery-div">
 
         <a href="./index.php">To upload (for funkywunks only!)</a>
-        <h1><?php echo 'You are on page ' . (($offset / 10) + 1)  ?></h1>
+        <h1><?php echo 'You are on page ' . (($offset / $imagesPerPage) + 1)  ?></h1>
         <h1>Total images: <?php echo $totalImages ?? "UNKNOWN"; ?></h1>
 
         <?php
@@ -91,12 +92,12 @@ if ($query->num_rows > 0) {
         <br>
         <?php
             if ($offset > 0) {
-                echo '<button><a class="pagi-buttons" href="./gallery.php?offset=' . ($offset - 10) . '">PREVIOUS</a></button>';
+                echo '<button><a class="pagi-buttons" href="./gallery.php?offset=' . ($offset - $imagesPerPage) . '">PREVIOUS</a></button>';
             }
-            if ($offset + 10 < $totalImages) {
-                echo '<button><a class="pagi-buttons" href="./gallery.php?offset=' . ($offset + 10) . '">NEXT</a></button>';
+            if ($offset + $imagesPerPage < $totalImages) {
+                echo '<button><a class="pagi-buttons" href="./gallery.php?offset=' . ($offset + $imagesPerPage) . '">NEXT</a></button>';
             }
-            if ($offset % 10 != 0) {
+            if ($offset % $imagesPerPage != 0) {
                 $offset -= $offset % 10;
                 echo '<button><a class="pagi-buttons" href="./gallery.php?offset=' . $offset . '">FIX OFFSET</a></button>';
             }
