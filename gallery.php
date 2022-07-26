@@ -54,64 +54,53 @@ if ($query->num_rows > 0) {
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>funkywunks!</title>
-    <style>
-        img {
-            border: black 1px solid;
-            max-width: 200px;
-            margin: 4px;
-            padding: 4px;
-        }
-
-        .video {
-            border: blue 2px solid;
-            max-width: 200px;
-            margin: 4px;
-            padding: 4px;
-        }
-    </style>
+    <link rel="stylesheet" href="./css/default.css">
 </head>
 <body>
-    <a href="./index.php">To upload (for funkywunks only!)</a>
-    <h1><?php echo 'You are on page ' . (($offset / 10) + 1)  ?></h1>
-    <h1>Total images: <?php echo $totalImages ?? "UNKNOWN"; ?></h1>
+    <div class="gallery-div">
 
-    <?php
-        $words = ['mp4', 'mov', 'webm'];
-        $iter = 0;
-        foreach ($imageUrls as $imageUrl) {
-            $isVideo = false;
+        <a href="./index.php">To upload (for funkywunks only!)</a>
+        <h1><?php echo 'You are on page ' . (($offset / 10) + 1)  ?></h1>
+        <h1>Total images: <?php echo $totalImages ?? "UNKNOWN"; ?></h1>
 
-            foreach ($words as $word) {
-                if (strpos($imageUrl, $word) !== false) {
-                    $isVideo = true;
+        <?php
+            $words = ['mp4', 'mov', 'webm'];
+            $iter = 0;
+            foreach ($imageUrls as $imageUrl) {
+                $isVideo = false;
+
+                foreach ($words as $word) {
+                    if (strpos($imageUrl, $word) !== false) {
+                        $isVideo = true;
+                    }
                 }
+
+                if ($isVideo) {
+                    $thumbnailPath = 'thumbnails/' . $imageMD5s[$iter][0] . $imageMD5s[$iter][1] . '/' . $imageMD5s[$iter][2] . $imageMD5s[$iter][3] . '/thumbnail_' . $imageMD5s[$iter] . '.png';
+                    echo "<a target='_blank' href='$imageUrl'>";
+                    echo "<img class='video' src='$thumbnailPath' alt='No thumbnail exists'>";
+                } else {
+                    echo "<a target='_blank' href='$imageUrl'>";
+                    echo "<img src='$imageUrl' alt='No thumbnail?'>";
+                }
+                echo "</a>";
+                $iter++;
             }
 
-            if ($isVideo) {
-                $thumbnailPath = 'thumbnails/' . $imageMD5s[$iter][0] . $imageMD5s[$iter][1] . '/' . $imageMD5s[$iter][2] . $imageMD5s[$iter][3] . '/thumbnail_' . $imageMD5s[$iter] . '.png';
-                echo "<a target='_blank' href='$imageUrl'>";
-                echo "<img class='video' src='$thumbnailPath' alt='No thumbnail exists'>";
-            } else {
-                echo "<a target='_blank' href='$imageUrl'>";
-                echo "<img src='$imageUrl' alt='No thumbnail?'>";
+        ?>
+        <br>
+        <?php
+            if ($offset > 0) {
+                echo '<button><a class="pagi-buttons" href="./gallery.php?offset=' . ($offset - 10) . '">PREVIOUS</a></button>';
             }
-            echo "</a>";
-            $iter++;
-        }
-
-    ?>
-    <br>
-    <?php
-        if ($offset > 0) {
-            echo '<button><a class="pagi-buttons" href="./gallery.php?offset=' . ($offset - 10) . '">PREVIOUS</a></button>';
-        }
-        if ($offset + 10 < $totalImages) {
-            echo '<button><a class="pagi-buttons" href="./gallery.php?offset=' . ($offset + 10) . '">NEXT</a></button>';
-        }
-        if ($offset % 10 != 0) {
-            $offset -= $offset % 10;
-            echo '<button><a class="pagi-buttons" href="./gallery.php?offset=' . $offset . '">FIX OFFSET</a></button>';
-        }
-    ?>
+            if ($offset + 10 < $totalImages) {
+                echo '<button><a class="pagi-buttons" href="./gallery.php?offset=' . ($offset + 10) . '">NEXT</a></button>';
+            }
+            if ($offset % 10 != 0) {
+                $offset -= $offset % 10;
+                echo '<button><a class="pagi-buttons" href="./gallery.php?offset=' . $offset . '">FIX OFFSET</a></button>';
+            }
+        ?>
+    </div>
 </body>
 </html>
