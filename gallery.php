@@ -98,7 +98,7 @@ if ($query->num_rows > 0) {
                 echo '<button><a class="pagi-buttons" href="./gallery.php?offset=' . ($offset + $imagesPerPage) . '">NEXT</a></button>';
             }
             if ($offset % $imagesPerPage != 0) {
-                $offset -= $offset % 10;
+                $offset -= $offset % 18;
                 echo '<button><a class="pagi-buttons" href="./gallery.php?offset=' . $offset . '">FIX OFFSET</a></button>';
             }
         ?>
