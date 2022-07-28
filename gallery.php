@@ -42,7 +42,7 @@ if ($query->num_rows > 0) {
     }
 
 } else {
-    // some error i guess
+    die('f you no images');
 }
 
 
@@ -76,13 +76,14 @@ if ($query->num_rows > 0) {
                     }
                 }
 
+                $rotateDeg = rand(-90, 90);
                 if ($isVideo) {
                     $thumbnailPath = 'thumbnails/' . $imageMD5s[$iter][0] . $imageMD5s[$iter][1] . '/' . $imageMD5s[$iter][2] . $imageMD5s[$iter][3] . '/thumbnail_' . $imageMD5s[$iter] . '.png';
                     echo "<a target='_blank' href='$imageUrl'>";
-                    echo "<img class='video' src='$thumbnailPath' alt='No thumbnail exists'>";
+                    echo "<img style='transform: rotate({$rotateDeg}deg)' class='video' src='$thumbnailPath' alt='No thumbnail exists'>";
                 } else {
                     echo "<a target='_blank' href='$imageUrl'>";
-                    echo "<img src='$imageUrl' alt='No thumbnail?'>";
+                    echo "<img style='transform: rotate({$rotateDeg}deg)' src='$imageUrl' alt='No thumbnail?'>";
                 }
                 echo "</a>";
                 $iter++;
