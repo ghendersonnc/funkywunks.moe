@@ -89,9 +89,17 @@ $imageTypes = [
 $file_md5 = md5_file($_FILES['image-file']['tmp_name']);
 $target_dir = 'images/' . $file_md5[0] . $file_md5[1] . '/' . $file_md5[2] . $file_md5[3] . '/';
 $target_file = $target_dir . $file_md5 . '.' . pathinfo($_FILES['image-file']['name'], PATHINFO_EXTENSION);
-$thumbnail_target = 'thumbnails/' . $file_md5[0] . $file_md5[1] . '/' . $file_md5[2] . $file_md5[3] . '/thumbnail_' . $file_md5 . '.' . pathinfo($_FILES['image-file']['name'], PATHINFO_EXTENSION);
 $pathExt = pathinfo($_FILES['image-file']['name'], PATHINFO_EXTENSION);
 $mimeType = mime_content_type($_FILES['image-file']['tmp_name']);
+
+if (in_array($mimeType, $videoTypes)) {
+    $thumbnail_target = 'thumbnails/' . $file_md5[0] . $file_md5[1] . '/' . $file_md5[2] . $file_md5[3] . '/thumbnail_' . $file_md5 . '.png';
+
+} else {
+    $thumbnail_target = 'thumbnails/' . $file_md5[0] . $file_md5[1] . '/' . $file_md5[2] . $file_md5[3] . '/thumbnail_' . $file_md5 . '.' . pathinfo($_FILES['image-file']['name'], PATHINFO_EXTENSION);
+
+}
+
 
 // Check if md5 exists in DB, if so, display link to that image.
 // It is highly unlikely 2 distinctly different images will contain the same md5
