@@ -67,16 +67,33 @@ body {
     margin: 0 auto;
 }
 
-.gallery-div img {
-    border: black 1px solid;
-    max-width: 200px;
-    margin: 4px;
+/*.gallery-div img {*/
+/*    border: black 1px solid;*/
+/*    max-width: 200px;*/
+/*    margin: 4px;*/
+/*    padding: 4px;*/
+/*}*/
+
+
+.gallery-div .image-containers {
+    display: flex;
+    flex: 1 0 21%;
+    width: 200px;
+    height: 200px;
+    margin: 2px 2px;
     padding: 4px;
+    justify-content: center;
+    align-items: center;
+    border: black 1px solid;
+
 }
 
+@media only screen and (max-width: 800px) {
+    .gallery-div .thumbnails {
+        flex-direction: column;
+    }
+}
 .gallery-div .video {
     border: blue 2px solid;
-    max-width: 200px;
-    margin: 4px;
-    padding: 4px;
 }
+

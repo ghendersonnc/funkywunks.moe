@@ -7,7 +7,7 @@ require('../connect.php');
  */
 
 $query = $conn->query('SELECT COUNT(*) FROM `images`');
-$imagesPerPage = 18;
+$imagesPerPage = 16;
 $offset = 0;
 $totalImages = 0;
 $imageUrls = [];
@@ -66,35 +66,6 @@ if ($query->num_rows > 0) {
         <a href="./index.php">To upload (for funkywunks only!)</a>
         <h1><?php echo 'You are on page ' . (($offset / $imagesPerPage) + 1)  ?></h1>
         <h1>Total images: <?php echo $totalImages ?? "UNKNOWN"; ?></h1>
-
-        <?php
-            $words = ['mp4', 'mov', 'webm'];
-            $iter = 0;
-            foreach ($imageUrls as $imageUrl) {
-                $isVideo = false;
-
-                foreach ($words as $word) {
-                    if (strpos($imageUrl, $word) !== false) {
-                        $isVideo = true;
-                    }
-                }
-
-                $rotateDeg = rand(-90, 90);
-//                $thumbnailPath = 'thumbnails/' . $imageMD5s[$iter][0] . $imageMD5s[$iter][1] . '/' . $imageMD5s[$iter][2] . $imageMD5s[$iter][3] . '/thumbnail_' . $imageMD5s[$iter] . '.png';
-                $thumbnailPath = $imageThumbnails[$iter];
-                if ($isVideo || strpos($thumbnailPath, 'gif') !== false) {
-                    echo "<a target='_blank' href='$imageUrl'>";
-                    echo "<img class='video' src='$thumbnailPath' alt='No thumbnail exists'>";
-                } else {
-                    echo "<a target='_blank' href='$imageUrl'>";
-                    echo "<img  src='$thumbnailPath' alt='No thumbnail?'>";
-                }
-                echo "</a>";
-                $iter++;
-            }
-
-        ?>
-        <br>
         <?php
             if ($offset > 0) {
                 echo '<button><a class="pagi-buttons" href="./gallery.php?offset=' . ($offset - $imagesPerPage) . '">PREVIOUS</a></button>';
@@ -107,6 +78,35 @@ if ($query->num_rows > 0) {
                 echo '<button><a class="pagi-buttons" href="./gallery.php?offset=' . $offset . '">FIX OFFSET</a></button>';
             }
         ?>
+        <div class="thumbnails" style="display: flex; flex-wrap: wrap;">
+                <?php
+                    $words = ['mp4', 'mov', 'webm'];
+                    $iter = 0;
+                    foreach ($imageUrls as $imageUrl) {
+                        $isVideo = false;
+
+                        foreach ($words as $word) {
+                            if (strpos($imageUrl, $word) !== false) {
+                                $isVideo = true;
+                            }
+                        }
+                        $thumbnailPath = $imageThumbnails[$iter];
+                        if ($isVideo || strpos($thumbnailPath, 'gif') !== false) {
+                            echo "<div class='image-containers video'>";
+                            echo "<a target='_blank' href='$imageUrl'>";
+                            echo "<img width='100%' height='100%' src='$thumbnailPath' alt='No thumbnail exists'>";
+                        } else {
+                            echo "<div class='image-containers'>";
+                            echo "<a target='_blank' href='$imageUrl'>";
+                            echo "<img width='100%' height='100%' src='$thumbnailPath' alt='No thumbnail?'>";
+                        }
+                        echo "</a>";
+                        echo "</div>";
+                        $iter++;
+                    }
+
+                ?>
+        </div>
     </div>
 </body>
 </html>
