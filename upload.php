@@ -1,5 +1,9 @@
 <?php
 
+/**
+ * @var array $config
+ */
+
 require('../connect.php');
 require('../config.php');
 require('../vendor/autoload.php');
@@ -25,7 +29,7 @@ if ($_FILES['image-file']['error'] == 1) {
     die("<p>ERROR UPLOADING IMAGE<p>");
 }
 
-function createThumbnail($destPath, $w=200) {
+function createThumbnailFromVideo($destPath, $w=200) {
     // using destPath in here as well because I want to overwrite
     $srcImage = imagecreatefrompng($destPath);
     $originalW = imagesx($srcImage);
@@ -38,15 +42,54 @@ function createThumbnail($destPath, $w=200) {
     imagedestroy($thumbnail);
 }
 
+function createThumbnailFromImage($src, $destPath, $mimeType) {
+
+    switch ($mimeType) {
+        case 'image/gif':
+            $srcImage = imagecreatefromgif($src);
+            break;
+        case 'image/jpeg':
+            $srcImage = imagecreatefromjpeg($src);
+            break;
+        case 'image/png':
+            $srcImage = imagecreatefrompng($src);
+            break;
+    }
+
+    $originalWidth = imagesx($srcImage);
+    $originalHeight = imagesy($srcImage);
+
+    if ($originalHeight > $originalWidth) {
+        $thumbnailHeight = 200;
+        $thumbnailWidth = floor($originalWidth * ($thumbnailHeight / $originalHeight));
+    } elseif ($originalHeight < $originalWidth) {
+        $thumbnailWidth = 200;
+        $thumbnailHeight = floor($originalHeight * ($thumbnailWidth / $originalWidth));
+    }
+
+    $destImage = imagecreatetruecolor($thumbnailWidth, $thumbnailHeight);
+    imagecopyresampled($destImage, $srcImage, 0,0,0,0, $thumbnailWidth, $thumbnailHeight, $originalWidth, $originalHeight);
+    imagejpeg($destImage, $destPath);
+    imagedestroy($srcImage);
+    imagedestroy($destImage);
+}
+
 $videoTypes = [
     'video/webm',
     'video/mp4',
     'video/quicktime'
 ];
 
+$imageTypes = [
+    'image/gif',
+    'image/jpeg',
+    'image/png'
+];
+
 $file_md5 = md5_file($_FILES['image-file']['tmp_name']);
 $target_dir = 'images/' . $file_md5[0] . $file_md5[1] . '/' . $file_md5[2] . $file_md5[3] . '/';
 $target_file = $target_dir . $file_md5 . '.' . pathinfo($_FILES['image-file']['name'], PATHINFO_EXTENSION);
+$thumbnail_target = 'thumbnails/' . $file_md5[0] . $file_md5[1] . '/' . $file_md5[2] . $file_md5[3] . '/thumbnail_' . $file_md5 . '.' . pathinfo($_FILES['image-file']['name'], PATHINFO_EXTENSION);
 $pathExt = pathinfo($_FILES['image-file']['name'], PATHINFO_EXTENSION);
 $mimeType = mime_content_type($_FILES['image-file']['tmp_name']);
 
@@ -68,21 +111,21 @@ if (!mkdir($target_dir, 0755, true)) {
 } else {
     echo '<p>FOLDER CREATED</p>';
 }
-
-if (move_uploaded_file($_FILES['image-file']['tmp_name'], $target_file)) {
+$imageTmp = $_FILES['image-file']['tmp_name'];
+if (move_uploaded_file($imageTmp, $target_file)) {
     echo '<p>File uploaded :)</p>';
 
     // Save image info to DB
     $now = gmdate('Y-m-d H:i:s');
-    $sm = $conn->prepare("INSERT INTO `images` (`md5`, `file_location`, `upload_date`) VALUES (?, ?, ?)");
-    $sm->bind_param("sss", $file_md5, $target_file, $now);
+    $sm = $conn->prepare("INSERT INTO `images` (`md5`, `file_location`, `thumbnail_location`, `upload_date`) VALUES (?, ?, ?, ?)");
+    $sm->bind_param("ssss", $file_md5, $target_file, $thumbnail_target, $now);
     $sm->execute();
 
     $conn->close();
+    $thumbnail_dir = './thumbnails/' . $file_md5[0] . $file_md5[1] . '/' . $file_md5[2] . $file_md5[3] . '/';
+    $thumbnailTarget = $thumbnail_dir . 'thumbnail_' . $file_md5 . '.png';
 
-    if (in_array($mimeType, $videoTypes) == true) {
-        $thumbnail_dir = './thumbnails/' . $file_md5[0] . $file_md5[1] . '/' . $file_md5[2] . $file_md5[3] . '/';
-        $thumbnailTarget = $thumbnail_dir . 'thumbnail_' . $file_md5 . '.png';
+    if (in_array($mimeType, $videoTypes)) {
         $video = $ffmpeg->open("images/$file_md5[0]$file_md5[1]/$file_md5[2]$file_md5[3]/$file_md5.$pathExt");
 
         if (!mkdir($thumbnail_dir, 0755, true)) {
@@ -90,13 +133,21 @@ if (move_uploaded_file($_FILES['image-file']['tmp_name'], $target_file)) {
         } else {
             echo '<p>THUMBNAIL FOLDER CREATED</p>';
         }
+
         $video->frame(FFMpeg\Coordinate\TimeCode::fromSeconds(0))->save($thumbnailTarget);
-        createThumbnail($thumbnailTarget);
+        createThumbnailFromVideo($thumbnailTarget);
+    } elseif (in_array($mimeType, $imageTypes)) {
+        if (!mkdir($thumbnail_dir, 0755, true)) {
+            echo '<p>THUMBNAIL FOLDER ALREADY EXISTS</p>';
+        } else {
+            echo '<p>THUMBNAIL FOLDER CREATED</p>';
+        }
+        createThumbnailFromImage($target_file, $thumbnail_target, $mimeType);
     }
 
     echo '<a target="_blank" href="' . $target_file .'">Go To Image</a><br>';
-    echo '<a href="index.php">Go back to upload</a><br>';
-    echo '<a href="gallery.php">Go to gallery</a>';
+    echo '<a href="./index.php">Go back to upload</a><br>';
+    echo '<a href="./gallery.php">Go to gallery</a>';
 
 } else {
     $conn->close();
