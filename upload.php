@@ -62,7 +62,7 @@ function createThumbnailFromImage($src, $destPath, $mimeType) {
     if ($originalHeight > $originalWidth) {
         $thumbnailHeight = 200;
         $thumbnailWidth = floor($originalWidth * ($thumbnailHeight / $originalHeight));
-    } elseif ($originalHeight < $originalWidth) {
+    } else {
         $thumbnailWidth = 200;
         $thumbnailHeight = floor($originalHeight * ($thumbnailWidth / $originalWidth));
     }
