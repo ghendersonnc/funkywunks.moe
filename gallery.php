@@ -12,6 +12,7 @@ $offset = 0;
 $totalImages = 0;
 $imageUrls = [];
 $imageMD5s = [];
+$imageThumbnails = [];
 
 if ($query->num_rows > 0) {
     $totalImages = intval($query->fetch_assoc()['COUNT(*)']);
@@ -19,22 +20,24 @@ if ($query->num_rows > 0) {
     if ($totalImages > 0) {
         if (isset($_GET['offset'])) {
             $offset = preg_replace('/\D/', '', $_GET['offset']);
-            $query = $conn->query("SELECT `file_location`, `md5` FROM `images` ORDER BY `upload_date` DESC LIMIT $offset, $imagesPerPage");
+            $query = $conn->query("SELECT `file_location`, `md5`, `thumbnail_location` FROM `images` ORDER BY `upload_date` DESC LIMIT $offset, $imagesPerPage");
 
             if ($query->num_rows > 0) {
                 while ($row = $query->fetch_assoc()) {
                     $imageUrls[] = $row['file_location'];
                     $imageMD5s[] = $row['md5'];
+                    $imageThumbnails[] = $row['thumbnail_location'];
                 }
             }
 
         } else {
-            $query = $conn->query("SELECT `file_location`, `md5` FROM `images` ORDER BY `upload_date` DESC LIMIT $offset, $imagesPerPage");
+            $query = $conn->query("SELECT `file_location`, `md5`, `thumbnail_location` FROM `images` ORDER BY `upload_date` DESC LIMIT $offset, $imagesPerPage");
 
             if ($query->num_rows > 0) {
                 while ($row = $query->fetch_assoc()) {
                     $imageUrls[] = $row['file_location'];
                     $imageMD5s[] = $row['md5'];
+                    $imageThumbnails[] = $row['thumbnail_location'];
                 }
             }
         }
@@ -77,13 +80,14 @@ if ($query->num_rows > 0) {
                 }
 
                 $rotateDeg = rand(-90, 90);
-                if ($isVideo) {
-                    $thumbnailPath = 'thumbnails/' . $imageMD5s[$iter][0] . $imageMD5s[$iter][1] . '/' . $imageMD5s[$iter][2] . $imageMD5s[$iter][3] . '/thumbnail_' . $imageMD5s[$iter] . '.png';
+//                $thumbnailPath = 'thumbnails/' . $imageMD5s[$iter][0] . $imageMD5s[$iter][1] . '/' . $imageMD5s[$iter][2] . $imageMD5s[$iter][3] . '/thumbnail_' . $imageMD5s[$iter] . '.png';
+                $thumbnailPath = $imageThumbnails[$iter];
+                if ($isVideo || strpos($thumbnailPath, 'gif') !== false) {
                     echo "<a target='_blank' href='$imageUrl'>";
-                    echo "<img style='transform: rotate({$rotateDeg}deg)' class='video' src='$thumbnailPath' alt='No thumbnail exists'>";
+                    echo "<img class='video' src='$thumbnailPath' alt='No thumbnail exists'>";
                 } else {
                     echo "<a target='_blank' href='$imageUrl'>";
-                    echo "<img style='transform: rotate({$rotateDeg}deg)' src='$imageUrl' alt='No thumbnail?'>";
+                    echo "<img  src='$thumbnailPath' alt='No thumbnail?'>";
                 }
                 echo "</a>";
                 $iter++;
