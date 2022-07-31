@@ -13,6 +13,7 @@ $totalImages = 0;
 $imageUrls = [];
 $imageMD5s = [];
 $imageThumbnails = [];
+$imageIds = [];
 
 if ($query->num_rows > 0) {
     $totalImages = intval($query->fetch_assoc()['COUNT(*)']);
@@ -20,25 +21,16 @@ if ($query->num_rows > 0) {
     if ($totalImages > 0) {
         if (isset($_GET['offset'])) {
             $offset = preg_replace('/\D/', '', $_GET['offset']);
-            $query = $conn->query("SELECT `file_location`, `md5`, `thumbnail_location` FROM `images` ORDER BY `upload_date` DESC LIMIT $offset, $imagesPerPage");
+        }
 
-            if ($query->num_rows > 0) {
-                while ($row = $query->fetch_assoc()) {
-                    $imageUrls[] = $row['file_location'];
-                    $imageMD5s[] = $row['md5'];
-                    $imageThumbnails[] = $row['thumbnail_location'];
-                }
-            }
+        $query = $conn->query("SELECT * FROM `images` ORDER BY `upload_date` DESC LIMIT $offset, $imagesPerPage");
 
-        } else {
-            $query = $conn->query("SELECT `file_location`, `md5`, `thumbnail_location` FROM `images` ORDER BY `upload_date` DESC LIMIT $offset, $imagesPerPage");
-
-            if ($query->num_rows > 0) {
-                while ($row = $query->fetch_assoc()) {
-                    $imageUrls[] = $row['file_location'];
-                    $imageMD5s[] = $row['md5'];
-                    $imageThumbnails[] = $row['thumbnail_location'];
-                }
+        if ($query->num_rows > 0) {
+            while ($row = $query->fetch_assoc()) {
+                $imageUrls[] = $row['file_location'];
+                $imageMD5s[] = $row['md5'];
+                $imageThumbnails[] = $row['thumbnail_location'];
+                $imageIds[] = $row['id'];
             }
         }
 
@@ -47,7 +39,6 @@ if ($query->num_rows > 0) {
 } else {
     die('f you no images');
 }
-
 
 ?>
 
@@ -68,16 +59,17 @@ if ($query->num_rows > 0) {
         <h1>Total images: <?php echo $totalImages ?? "UNKNOWN"; ?></h1>
         <?php
             if ($offset > 0) {
-                echo '<button><a class="pagi-buttons" href="./gallery.php?offset=' . ($offset - $imagesPerPage) . '">PREVIOUS</a></button>';
+                echo '<a class="pagi-buttons" href="./gallery.php?offset=' . ($offset - $imagesPerPage) . '">PREVIOUS</a>';
             }
             if ($offset + $imagesPerPage < $totalImages) {
-                echo '<button><a class="pagi-buttons" href="./gallery.php?offset=' . ($offset + $imagesPerPage) . '">NEXT</a></button>';
+                echo '<a class="pagi-buttons" href="./gallery.php?offset=' . ($offset + $imagesPerPage) . '">NEXT</a>';
             }
             if ($offset % $imagesPerPage != 0) {
-                $offset -= $offset % 18;
-                echo '<button><a class="pagi-buttons" href="./gallery.php?offset=' . $offset . '">FIX OFFSET</a></button>';
+                $offset -= $offset % $imagesPerPage;
+                echo '<a class="pagi-buttons" href="./gallery.php?offset=' . $offset . '">FIX OFFSET</a>';
             }
         ?>
+        <br>
         <div class="thumbnails" style="display: flex; flex-wrap: wrap;">
                 <?php
                     $words = ['mp4', 'mov', 'webm'];
@@ -91,12 +83,12 @@ if ($query->num_rows > 0) {
                             }
                         }
                         $thumbnailPath = $imageThumbnails[$iter];
-                        if ($isVideo || strpos($thumbnailPath, 'gif') !== false) {
-                            echo "<div class='image-containers video'>";
+                        if ($isVideo || strpos($thumbnailPath, 'gif')) {
+                            echo "<div id='image_$imageIds[$iter]' class='image-containers video'>";
                             echo "<a target='_blank' href='$imageUrl'>";
                             echo "<img width='100%' height='100%' src='$thumbnailPath' alt='No thumbnail exists'>";
                         } else {
-                            echo "<div class='image-containers'>";
+                            echo "<div id='image_$imageIds[$iter]' class='image-containers'>";
                             echo "<a target='_blank' href='$imageUrl'>";
                             echo "<img width='100%' height='100%' src='$thumbnailPath' alt='No thumbnail?'>";
                         }
@@ -105,7 +97,7 @@ if ($query->num_rows > 0) {
                         $iter++;
                     }
 
-                ?>
+                    ?>
         </div>
     </div>
 </body>
