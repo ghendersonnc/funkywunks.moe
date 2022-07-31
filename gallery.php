@@ -55,20 +55,30 @@ if ($query->num_rows > 0) {
     <div class="gallery-div">
 
         <a href="./index.php">To upload (for funkywunks only!)</a>
-        <h1><?php echo 'You are on page ' . (($offset / $imagesPerPage) + 1)  ?></h1>
+        <div class="border-info">
+            <ul>
+                <li>Border Colors:</li>
+                <li class="border-info-li"><span style="color:red; font-weight: bold">Red:</span> gif</li>
+                <li class="border-info-li"><span style="color:blue; font-weight: bold">Blue:</span> video</li>
+                <li class="border-info-li"><span style="font-weight: bold">Black:</span> static image</li>
+            </ul>
+        </div>
         <h1>Total images: <?php echo $totalImages ?? "UNKNOWN"; ?></h1>
-        <?php
-            if ($offset > 0) {
-                echo '<a class="pagi-buttons" href="./gallery.php?offset=' . ($offset - $imagesPerPage) . '">PREVIOUS</a>';
-            }
-            if ($offset + $imagesPerPage < $totalImages) {
-                echo '<a class="pagi-buttons" href="./gallery.php?offset=' . ($offset + $imagesPerPage) . '">NEXT</a>';
-            }
-            if ($offset % $imagesPerPage != 0) {
-                $offset -= $offset % $imagesPerPage;
-                echo '<a class="pagi-buttons" href="./gallery.php?offset=' . $offset . '">FIX OFFSET</a>';
-            }
-        ?>
+        <div class="nav-buttons">
+            <?php
+                if ($offset > 0) {
+                    echo '<a class="pagi-buttons" href="./gallery.php?offset=' . ($offset - $imagesPerPage) . '">PREVIOUS</a>';
+                }
+                if ($offset + $imagesPerPage < $totalImages) {
+                    echo '<a class="pagi-buttons" href="./gallery.php?offset=' . ($offset + $imagesPerPage) . '">NEXT</a>';
+                }
+                if ($offset % $imagesPerPage != 0) {
+                    $offset -= $offset % $imagesPerPage;
+                    echo '<a class="pagi-buttons" href="./gallery.php?offset=' . $offset . '">FIX OFFSET</a>';
+                }
+            ?>
+            <span>Page: <?php echo (($offset / $imagesPerPage) + 1); ?></span>
+        </div>
         <br>
         <div class="thumbnails" style="display: flex; flex-wrap: wrap;">
                 <?php
@@ -83,13 +93,17 @@ if ($query->num_rows > 0) {
                             }
                         }
                         $thumbnailPath = $imageThumbnails[$iter];
-                        if ($isVideo || strpos($thumbnailPath, 'gif')) {
+                        if ($isVideo) {
                             echo "<div id='image_$imageIds[$iter]' class='image-containers video'>";
-                            echo "<a target='_blank' href='$imageUrl'>";
+                            echo "<a href='./post.php?post_id=$imageIds[$iter]'>";
+                            echo "<img width='100%' height='100%' src='$thumbnailPath' alt='No thumbnail exists'>";
+                        } elseif ( strpos($thumbnailPath, 'gif')) {
+                            echo "<div id='image_$imageIds[$iter]' class='image-containers gif'>";
+                            echo "<a href='./post.php?post_id=$imageIds[$iter]'>";
                             echo "<img width='100%' height='100%' src='$thumbnailPath' alt='No thumbnail exists'>";
                         } else {
                             echo "<div id='image_$imageIds[$iter]' class='image-containers'>";
-                            echo "<a target='_blank' href='$imageUrl'>";
+                            echo "<a href='./post.php?post_id=$imageIds[$iter]'>";
                             echo "<img width='100%' height='100%' src='$thumbnailPath' alt='No thumbnail?'>";
                         }
                         echo "</a>";

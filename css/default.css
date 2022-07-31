@@ -80,7 +80,6 @@ body {
 
 }
 .gallery-div .thumbnails {
-    margin-top: 10px;
 }
 @media only screen and (max-width: 800px) {
     .gallery-div .thumbnails {
@@ -91,9 +90,13 @@ body {
     border: blue 2px solid;
 }
 
+.gallery-div .gif {
+    border: red 2px solid;
+}
+
 .gallery-div .pagi-buttons {
     background: #acacac;
-    margin: 6px 2px;
+    margin: 0 2px;
     padding: 4px;
     color:black;
     text-decoration: none;
@@ -102,4 +105,30 @@ body {
 
 .gallery-div .pagi-buttons:hover {
     background: #8e8e8e;
+}
+
+.gallery-div .nav-buttons {
+    display: block;
+}
+
+.border-info ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+.border-info .border-info-li {
+    padding-left: 16px;
+}
+
+.post-media-container {
+    width: 900px;
+    height: 900px;
+    max-width: 100%;
+    margin: 0;
+}
+
+.post-media {
+    max-width: 100%;
+    height: auto;
+    max-height: 100%;
 }
