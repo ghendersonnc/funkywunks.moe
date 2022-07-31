@@ -67,14 +67,6 @@ body {
     margin: 0 auto;
 }
 
-/*.gallery-div img {*/
-/*    border: black 1px solid;*/
-/*    max-width: 200px;*/
-/*    margin: 4px;*/
-/*    padding: 4px;*/
-/*}*/
-
-
 .gallery-div .image-containers {
     display: flex;
     flex: 1 0 21%;
@@ -87,7 +79,9 @@ body {
     border: black 1px solid;
 
 }
-
+.gallery-div .thumbnails {
+    margin-top: 10px;
+}
 @media only screen and (max-width: 800px) {
     .gallery-div .thumbnails {
         flex-direction: column;
@@ -97,3 +91,15 @@ body {
     border: blue 2px solid;
 }
 
+.gallery-div .pagi-buttons {
+    background: #acacac;
+    margin: 6px 2px;
+    padding: 4px;
+    color:black;
+    text-decoration: none;
+    border-radius: 2px;
+}
+
+.gallery-div .pagi-buttons:hover {
+    background: #8e8e8e;
+}
