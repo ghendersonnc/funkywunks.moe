@@ -29,14 +29,24 @@ if ($_FILES['image-file']['error'] == 1) {
     die("<p>ERROR UPLOADING IMAGE<p>");
 }
 
-function createThumbnailFromVideo($destPath, $w=200) {
+function createThumbnailFromVideo($destPath) {
     // using destPath in here as well because I want to overwrite
     $srcImage = imagecreatefrompng($destPath);
     $originalW = imagesx($srcImage);
     $originalH = imagesy($srcImage);
-    $h = floor($originalH * ($w / $originalW));
-    $thumbnail = imagecreate($w, $h);
-    imagecopyresampled($thumbnail, $srcImage, 0, 0, 0, 0, $w, $h, $originalW, $originalH);
+    $thumbnailHeight = 0;
+    $thumbnailWidth = 0;
+
+    if ($originalH > $originalW) {
+        $thumbnailHeight = 200;
+        $thumbnailWidth = floor($originalW * ($thumbnailHeight / $originalH));
+    } elseif ($originalH < $originalW) {
+        $thumbnailWidth = 200;
+        $thumbnailHeight = floor($originalH * ($thumbnailWidth / $originalW));
+    }
+
+    $thumbnail = imagecreate($thumbnailWidth, $thumbnailHeight);
+    imagecopyresampled($thumbnail, $srcImage, 0, 0, 0, 0, $thumbnailWidth, $thumbnailHeight, $originalW, $originalH);
     imagepng($thumbnail, $destPath);
     imagedestroy($srcImage);
     imagedestroy($thumbnail);
