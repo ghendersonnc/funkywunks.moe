@@ -19,7 +19,8 @@ if (isset($_GET['post_id'])) {
         $row = $query->fetch_assoc();
         $imageUrl = $row['file_location'];
     } else {
-        die('??');
+        die('<h1>Post ID does not exist</h1>');
+
     }
 
 }
