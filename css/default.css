@@ -119,3 +119,16 @@ body {
 .border-info .border-info-li {
     padding-left: 16px;
 }
+
+.post-media-container {
+    width: 900px;
+    height: 900px;
+    max-width: 100%;
+    margin: 0;
+}
+
+.post-media {
+    max-width: 100%;
+    height: auto;
+    max-height: 100%;
+}
