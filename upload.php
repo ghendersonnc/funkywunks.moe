@@ -40,7 +40,7 @@ function createThumbnailFromVideo($destPath) {
     if ($originalH > $originalW) {
         $thumbnailHeight = 200;
         $thumbnailWidth = floor($originalW * ($thumbnailHeight / $originalH));
-    } elseif ($originalH < $originalW) {
+    } else {
         $thumbnailWidth = 200;
         $thumbnailHeight = floor($originalH * ($thumbnailWidth / $originalW));
     }
