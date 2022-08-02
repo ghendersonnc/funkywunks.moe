@@ -2,6 +2,7 @@
 
 /**
  * @var array $config
+ * @var $conn
  */
 
 require('../connect.php');
@@ -29,9 +30,7 @@ if ($_FILES['image-file']['error'] == 1) {
     die("<p>ERROR UPLOADING IMAGE<p>");
 }
 
-function createThumbnailFromVideo($destPath) {
-    // using destPath in here as well because I want to overwrite
-    $srcImage = imagecreatefrompng($destPath);
+function saveThumbnail($destPath, $srcImage) {
     $originalW = imagesx($srcImage);
     $originalH = imagesy($srcImage);
     $thumbnailHeight = 0;
@@ -45,15 +44,25 @@ function createThumbnailFromVideo($destPath) {
         $thumbnailHeight = floor($originalH * ($thumbnailWidth / $originalW));
     }
 
-    $thumbnail = imagecreate($thumbnailWidth, $thumbnailHeight);
+    $thumbnail = imagecreatetruecolor($thumbnailWidth, $thumbnailHeight);
     imagecopyresampled($thumbnail, $srcImage, 0, 0, 0, 0, $thumbnailWidth, $thumbnailHeight, $originalW, $originalH);
-    imagepng($thumbnail, $destPath);
+    imagejpeg($thumbnail, $destPath);
     imagedestroy($srcImage);
     imagedestroy($thumbnail);
 }
 
+function createThumbnailFromVideo($destPath) {
+    // using destPath in here as well because I want to overwrite
+    $srcImage = imagecreatefrompng($destPath);
+
+    saveThumbnail($destPath, $srcImage);
+}
+
 function createThumbnailFromImage($src, $destPath, $mimeType) {
 
+    /**
+     * @var GdImage $srcImage
+     */
     switch ($mimeType) {
         case 'image/gif':
             $srcImage = imagecreatefromgif($src);
@@ -66,22 +75,7 @@ function createThumbnailFromImage($src, $destPath, $mimeType) {
             break;
     }
 
-    $originalWidth = imagesx($srcImage);
-    $originalHeight = imagesy($srcImage);
-
-    if ($originalHeight > $originalWidth) {
-        $thumbnailHeight = 200;
-        $thumbnailWidth = floor($originalWidth * ($thumbnailHeight / $originalHeight));
-    } else {
-        $thumbnailWidth = 200;
-        $thumbnailHeight = floor($originalHeight * ($thumbnailWidth / $originalWidth));
-    }
-
-    $destImage = imagecreatetruecolor($thumbnailWidth, $thumbnailHeight);
-    imagecopyresampled($destImage, $srcImage, 0,0,0,0, $thumbnailWidth, $thumbnailHeight, $originalWidth, $originalHeight);
-    imagejpeg($destImage, $destPath);
-    imagedestroy($srcImage);
-    imagedestroy($destImage);
+    saveThumbnail($destPath, $srcImage);
 }
 
 $videoTypes = [
